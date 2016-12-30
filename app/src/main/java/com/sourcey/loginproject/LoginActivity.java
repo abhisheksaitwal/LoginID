@@ -1,6 +1,7 @@
 package com.sourcey.loginproject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -23,13 +24,18 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.btn_login) Button _loginButton;
     @Bind(R.id.link_signup) TextView _signupLink;
+    private Context mContext;
+    private UserManager mManager;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        
+        mManager = new UserManager(this);
+        mContext = this;
+
+
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -71,6 +77,16 @@ public class LoginActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
+
+        boolean isSuccess = mManager.checkLoginValidate(email, password);
+        if (isSuccess) {
+            Intent intent = new Intent(mContext, MainActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            String message = getString(R.string.login_error_message);
+            Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+        }
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
